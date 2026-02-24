@@ -4,6 +4,7 @@ public class ForgetPassword {
     String email;
     private String resetToken;
     String expirationTime;
+
     public ForgetPassword(String email, String resetToken) {
         this.email = email;
         this.resetToken = resetToken;

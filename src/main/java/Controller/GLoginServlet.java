@@ -13,10 +13,8 @@ public class GLoginServlet extends HttpServlet {
     public Logger logger = AppLogger.getLogger(GLoginServlet.class);
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) {
-        String url = "https:accounts.google.com/o/oauth2/v2/auth"
-                + "?client_id=" + Gconfig.client_id
-                + "&redirect_uri=" + Gconfig.redirect
-                + "&response_type=code"
+        String url = "https:accounts.google.com/o/oauth2/v2/auth" + "?client_id=" + Gconfig.client_id
+                + "&redirect_uri=" + Gconfig.redirect + "&response_type=code"
                 + "&scope=openid%20email%20profile";
         try{
             res.sendRedirect(url);
@@ -26,4 +24,5 @@ public class GLoginServlet extends HttpServlet {
         }
     }
 }
+
 

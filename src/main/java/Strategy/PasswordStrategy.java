@@ -23,8 +23,10 @@ public class PasswordStrategy implements AuthStrategy{
             logger.warning("DB Password is empty");
             return false;
         }
+
         BCrypt.Result result = BCrypt.verifyer()
                 .verify(user.getPassword().toCharArray(), org_pwd);
+        logger.info("Password verified" + result.verified);
         return result.verified;
     }
 }

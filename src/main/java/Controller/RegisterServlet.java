@@ -9,7 +9,7 @@ import model.Users;
 import util.AppLogger;
 import util.JwtUtil;
 import java.util.logging.Logger;
-import util.PasswordHashing;
+import util.PasswordProp;
 import util.ResWriter;
 
 @WebServlet ("/register")
@@ -20,14 +20,18 @@ public class RegisterServlet extends HttpServlet {
 
         String email = req.getParameter("email");
         String password = req.getParameter("password");
-        if (password.isEmpty()) {
-            ResWriter.write(res, "Password is Empty");
+
+        if (!PasswordProp.isPasswordValid(password)) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(res, "Password is invlaid");
             return;
         }
-        String pwd_hash = PasswordHashing.hashPassword(password);
+
+        String pwd_hash = PasswordProp.hashPassword(password);
 
         RegisterService registerService = new RegisterService();
         Users user = new Users(email, pwd_hash);
+
         if (registerService.register(user)){
             String token = JwtUtil.generateToken(user.getEmail());
             res.setContentType("application/json");

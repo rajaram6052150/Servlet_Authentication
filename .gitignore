@@ -2,8 +2,11 @@
 .idea/
 *.iml
 target/
-
+out/
+resources/
 *.log
-
+*.class
 .DS_Store
 Thumbs.db
+
+
