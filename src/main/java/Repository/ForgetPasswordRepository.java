@@ -1,64 +1,54 @@
 package Repository;
 
 import model.ForgetPassword;
-import model.Users;
 import util.AppLogger;
 import util.DBConfig;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Logger;
+import Exception.RequestFormatException;
+import Exception.ServerException;
 
 public class ForgetPasswordRepository {
 
     public Logger logger = AppLogger.getLogger(ForgetPassword.class);
-    UserRepository userdb = new UserRepository();
 
-    public boolean validateResetToken(Users user , ForgetPassword fdb){
+    public String getResetToken(ForgetPassword fdb){
 
-        String sql = "select * from forget_password where email = ?";
+        String sql = "select token , expiry from forget_password where email = ?";
         try (Connection con = DBConfig.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)){
-            ps.setString(1, user.getEmail());
+            ps.setString(1, fdb.getEmail());
             ResultSet rs = ps.executeQuery();
-            try{
-                if (rs.next()) {
-                    logger.info("db token " + rs.getString("token"));
-                    logger.info("user token "  + fdb.getResetToken());
-                    Timestamp expiry = rs.getTimestamp("expiry");
-                    if (expiry.after(new Timestamp(System.currentTimeMillis()))) {
-                        logger.info("validation successfull");
-                        return userdb.updatePassword(user);
-                    } else {
-                        logger.info("validation failed");
-                    }
-                } else {
-                    logger.info("no email found");
-                }
+            if (rs.next()){
+                Timestamp expiry = rs.getTimestamp("expiry");
+                if (expiry.after(new Timestamp(System.currentTimeMillis()))) {
+                    logger.info("Not expired");
+                    return rs.getString("token");
+                } else throw new RequestFormatException("Token Validation Expired");
             }
-            catch (SQLException e){
-                logger.info(" sql validation failed");
-            }
+            else throw new RequestFormatException("Email Not Found");
         }
-        catch(Exception e){
-            logger.severe("Error getting reset token " + e);
+        catch(SQLException e){
+            logger.severe("Database Connection failed " + e);
+            throw new ServerException("Database connection failed" + e);
         }
-        return false;
     }
 
-    public boolean deleteFPwd(ForgetPassword fdb){
+    public boolean deleteFPwd(ForgetPassword fdb) throws Exception{
         String sql = "delete from forget_password where email = ?";
         try (Connection con = DBConfig.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)){
             ps.setString(1, fdb.getEmail());
             return ps.executeUpdate() > 0;
         }
-        catch(Exception e){
-            logger.severe("Error deleting fpassword " + e);
+        catch(SQLException e){
+            logger.severe("Error inserting foreget password " + e);
+            throw new ServerException("Database Connection failed" + e);
         }
-        return false;
     }
 
-    public String fpwdInsert(String email){
+    public String fpwdInsert(String email) {
         String sql = "insert into forget_password values (?,?,?)";
         String token = UUID.randomUUID().toString();
         Timestamp expiry = new Timestamp(System.currentTimeMillis() + 15 * 60 * 1000);
@@ -68,13 +58,12 @@ public class ForgetPasswordRepository {
             ps.setString(1, email);
             ps.setString(2, token);
             ps.setTimestamp(3, expiry);
-            logger.info("rows inserted" + ps.executeUpdate());
-            logger.info("inserted");
+            logger.info("rows inserted " + ps.executeUpdate());
             return token;
         }
-        catch(Exception e){
-            logger.severe("Error inserting foreget password " + e);
+        catch(SQLException e){
+            logger.severe("Database Connection failed " + e);
+            throw new ServerException("Database connection failed");
         }
-        return "";
     }
 }

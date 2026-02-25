@@ -9,6 +9,7 @@ import java.util.Properties;
 
 public class MailService {
     Logger logger = AppLogger.getLogger(MailService.class);
+
     public void sentMail(String recipient, String subject, String body){
         if (recipient != null && !recipient.trim().isEmpty()) {
             Properties props = new Properties();
@@ -35,3 +36,4 @@ public class MailService {
         }
     }
 }
+

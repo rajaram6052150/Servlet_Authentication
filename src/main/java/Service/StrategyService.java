@@ -5,13 +5,9 @@ import model.Users;
 
 public class StrategyService {
 
-    AuthStrategy strategy;
+    private AuthStrategy strategy;
 
     public StrategyService() {}
-
-    public StrategyService(AuthStrategy authStrategy) {
-        this.strategy = authStrategy;
-    }
 
     public boolean authenticate(Users user) {
         return strategy.authenticate(user);

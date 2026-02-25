@@ -3,6 +3,7 @@ package Strategy;
 import Repository.UserRepository;
 import enums.AuthProvider;
 import model.Users;
+import Exception.ServerException;
 
 public class GoogleStrategy implements AuthStrategy{
     UserRepository userdb;
@@ -10,7 +11,7 @@ public class GoogleStrategy implements AuthStrategy{
         userdb = new UserRepository();
     }
 
-    public boolean authenticate(Users user){
+    public boolean authenticate(Users user) throws ServerException {
 
         if (userdb.isEmailExist(user.getEmail())){
             AuthProvider provider = userdb.getProvider(user.getEmail());

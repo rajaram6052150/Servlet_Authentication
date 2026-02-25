@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.AppLogger;
-import util.PasswordProp;
 import util.ResWriter;
 import java.util.logging.Logger;
+import Exception.RequestFormatException;
 
 @WebServlet("/forget-password")
 public class ForgetPasswordServlet extends HttpServlet {
@@ -20,19 +20,24 @@ public class ForgetPasswordServlet extends HttpServlet {
         String email = request.getParameter("email");
         String res = "";
 
-        if (!PasswordProp.isPasswordValid(email)){
-            ResWriter.write(response , "Email is invalid");
-            return;
+        try{
+            if (fpwd.fpwdHandler(email)){
+                logger.info("Mail sent successfully");
+                res += "Mail sent successfully";
+            }
+            else{
+                res += "mail not found in db";
+            }
+            ResWriter.write(response , res);
         }
-
-        if (fpwd.fpwdHandler(email)){
-            logger.info("Mail sent successfully");
-            res += "Mail sent successfully";
+        catch(RequestFormatException e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(response , e.getMessage());
         }
-        else{
-            res += "mail not found in db";
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ResWriter.write(response , e.getMessage());
         }
-        ResWriter.write(response , res);
     }
 }
 

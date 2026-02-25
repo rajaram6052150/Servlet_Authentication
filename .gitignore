@@ -1,12 +1,12 @@
-
 .idea/
 *.iml
+
 target/
 out/
-resources/
-*.log
+build/
+
 *.class
+*.log
+
 .DS_Store
 Thumbs.db
-
-

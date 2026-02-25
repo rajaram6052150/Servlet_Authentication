@@ -11,14 +11,9 @@ public class JwtUtil {
 
     public static String generateToken(String email) {
 
-        return JWT.create()
-                .withSubject(email)
-                .withIssuedAt(new Date())
+        return JWT.create().withSubject(email).withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .sign(Algorithm.HMAC256(SECRET));
     }
 }
-
-
-
 

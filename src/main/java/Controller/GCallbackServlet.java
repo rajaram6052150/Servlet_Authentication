@@ -17,8 +17,8 @@ import util.Gconfig;
 import util.ResWriter;
 
 @WebServlet("/google-callback")
-public class GtokenServlet extends HttpServlet {
-    public Logger logger = AppLogger.getLogger(GtokenServlet.class);
+public class GCallbackServlet extends HttpServlet {
+    public Logger logger = AppLogger.getLogger(GCallbackServlet.class);
     public static HttpClient client = HttpClient.newHttpClient();
     public StrategyService ss = new StrategyService();
 

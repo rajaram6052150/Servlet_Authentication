@@ -9,9 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Users;
 import util.AppLogger;
 import util.JwtUtil;
-import util.PasswordProp;
 import util.ResWriter;
 import java.util.logging.Logger;
+import Exception.RequestFormatException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -23,20 +23,28 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        Users user = new Users(email , password);
+        try {
+            Users user = new Users(email , password);
+            strategy.setStrategy(new PasswordStrategy());
 
-        if (!PasswordProp.isPasswordValid(user.getPassword())){
-            ResWriter.write(response , "Password is empty");
+            if (strategy.authenticate(user)){
+                String jwtToken = JwtUtil.generateToken(user.getEmail());
+                response.setContentType("application/json");
+                ResWriter.write(response, jwtToken);
+                ResWriter.write(response, "\nSucess");
+            }
+            else{
+                ResWriter.write(response, "Password Wrong");
+            }
         }
-
-        strategy.setStrategy(new PasswordStrategy());
-
-        if (strategy.authenticate(user)) {
-            String jwtToken = JwtUtil.generateToken(user.getEmail());
-            response.setContentType("application/json");
-            ResWriter.write(response , jwtToken);
-            ResWriter.write(response , "\nSucess");
+        catch (RequestFormatException e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(response, e.getMessage());
         }
-        else ResWriter.write(response , "Fail");
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ResWriter.write(response, e.getMessage());
+        }
     }
 }
+

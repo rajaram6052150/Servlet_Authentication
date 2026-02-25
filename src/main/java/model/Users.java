@@ -1,7 +1,8 @@
 package model;
 
 import enums.AuthProvider;
-import util.PasswordProp;
+import util.RequestValidation;
+import Exception.RequestFormatException;
 
 public class Users {
 
@@ -15,21 +16,18 @@ public class Users {
 
     public Users(String email, String password) {
         this.email = email;
-        if (!(password == null || password.strip().length() == 0)) {
-            this.hashedPassword = password;
+        if (!RequestValidation.isPasswordValid(password)) {
+            throw new RequestFormatException("Passsword is empty");
         }
+        this.hashedPassword = password;
     }
 
     public void hashPassword(String password) {
-        this.hashedPassword = PasswordProp.hashPassword(password);
+        this.hashedPassword = RequestValidation.hashPassword(password);
     }
 
     public String getEmail() {
         return email;
-    }
-
-    public boolean isPasswordEmpty() {
-        return (this.hashedPassword == null || this.hashedPassword.isEmpty());
     }
 
     public String getPassword() {

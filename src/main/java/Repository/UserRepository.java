@@ -6,6 +6,7 @@ import util.AppLogger;
 import util.DBConfig;
 import java.sql.*;
 import java.util.logging.Logger;
+import Exception.ServerException;
 
 public class UserRepository{
 
@@ -20,13 +21,12 @@ public class UserRepository{
             ps.setString(1 , user.getEmail());
             ps.setString(2 , user.getPassword());
             ps.setString(3 , p.name());
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
         }
-        catch(Exception e){
+        catch(SQLException e){
             logger.severe("Error inserting " + e);
-            return false;
+            throw new ServerException("Database error" + e);
         }
-        return true;
     }
 
     public String getPassword(String email){
@@ -42,8 +42,9 @@ public class UserRepository{
                 if (rs.next()) return rs.getString("hashed_password");
             }
         }
-        catch(Exception e){
+        catch(SQLException e){
             logger.severe("Error getting password " + e);
+            throw new ServerException("Database error" + e);
         }
         return null;
     }
@@ -59,15 +60,16 @@ public class UserRepository{
                 if (rs.next()) return AuthProvider.valueOf(rs.getString("Auth_provider"));
             }
         }
-        catch (Exception e){
+        catch (SQLException e){
             logger.severe("Error getting provider " + e);
+            throw new ServerException("Database error" + e);
         }
         return null;
     }
 
     public boolean isEmailExist(String email){
 
-        String sql = "select * from users where email = ?";
+        String sql = "select email from users where email = ?";
         try (Connection con = DBConfig.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)){
             ps.setString(1, email);
@@ -76,10 +78,10 @@ public class UserRepository{
                 return rs.next();
             }
         }
-        catch (Exception e){
-            logger.severe("Error getting email " + e);
+        catch (SQLException e){
+            logger.severe("Error getting provider " + e);
+            throw new ServerException("Database error" + e);
         }
-        return false;
     }
 
     public boolean changeProvider(String email){
@@ -90,10 +92,10 @@ public class UserRepository{
             ps.setString(2 , email);
             return ps.executeUpdate() > 0;
         }
-        catch(Exception e){
-            logger.severe("Error changing provider " + e);
+        catch (SQLException e){
+            logger.severe("Error getting provider " + e);
+            throw new ServerException("Database error" + e);
         }
-        return false;
     }
 
     public boolean updatePassword(Users user){
@@ -102,16 +104,14 @@ public class UserRepository{
              PreparedStatement ps = con.prepareStatement(sql)){
             ps.setString(1, user.getPassword());
             ps.setString(2 , user.getEmail());
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
         }
-        catch(Exception e){
-            logger.severe("Error changing password " + e);
-            return false;
+        catch (SQLException e){
+            logger.severe("Error getting provider " + e);
+            throw new ServerException("Database error" + e);
         }
-        return true;
     }
 }
-
 
 
 
