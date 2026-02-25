@@ -20,11 +20,17 @@ public class LoginServlet extends HttpServlet {
     StrategyService strategy = new StrategyService();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        String[] email = request.getParameterValues("email");
+        String[] password = request.getParameterValues("password");
+
+        if (email == null || password == null || email.length > 1 || password.length > 1){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(response , "Invalid arguments");
+            return;
+        }
 
         try {
-            Users user = new Users(email , password);
+            Users user = new Users(email[0] , password[0]);
             strategy.setStrategy(new PasswordStrategy());
 
             if (strategy.authenticate(user)){

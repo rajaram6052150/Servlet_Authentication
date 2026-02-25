@@ -13,15 +13,21 @@ import Exception.RequestFormatException;
 public class ResetPasswordServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res){
-        String email = req.getParameter("email");
-        String resetToken = req.getParameter("token");
-        String newpwd = req.getParameter("newPassword");
+        String[] email = req.getParameterValues("email");
+        String[] resetToken = req.getParameterValues("token");
+        String[] newpwd = req.getParameterValues("newPassword");
 
-        ForgetPassword fdb = new ForgetPassword(email, resetToken);
+        if (email == null || newpwd == null || resetToken == null || email.length > 1 || resetToken.length > 1 || newpwd.length > 1) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(res , "Invalid arguments");
+            return;
+        }
+
+        ForgetPassword fdb = new ForgetPassword(email[0], resetToken[0]);
         ForgetPwdSerice fps = new ForgetPwdSerice();
         try{
             String ans = "";
-            if (fps.resetPwdHandler(fdb , newpwd)){
+            if (fps.resetPwdHandler(fdb , newpwd[0])){
                 ans += "Password changed successfully";
             }
             else ans += "Password not changed";

@@ -20,12 +20,17 @@ public class RegisterServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) {
 
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+        String[] email = req.getParameterValues("email");
+        String[] password = req.getParameterValues("password");
+        if (email == null || password == null || email.length > 1 || password.length > 1){
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(res , "Invalid arguments");
+            return;
+        }
 
         try{
-            String pwd_hash = RequestValidation.hashPassword(password);
-            Users user = new Users(email, pwd_hash);
+            String pwd_hash = RequestValidation.hashPassword(password[0]);
+            Users user = new Users(email[0], pwd_hash);
             if (registerService.register(user)){
                 String token = JwtUtil.generateToken(user.getEmail());
                 res.setContentType("application/json");

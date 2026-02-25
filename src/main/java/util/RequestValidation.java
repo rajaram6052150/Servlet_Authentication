@@ -20,6 +20,7 @@ public class RequestValidation {
     }
 
     public static boolean isEmailvalid(String email){
+        if (email == null) return false;
         return Email_pattern.matcher(email).matches();
     }
 

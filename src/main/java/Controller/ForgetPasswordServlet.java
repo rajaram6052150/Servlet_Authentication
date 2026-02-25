@@ -17,11 +17,16 @@ public class ForgetPasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 
         ForgetPwdSerice fpwd = new ForgetPwdSerice();
-        String email = request.getParameter("email");
+        String[] email = request.getParameterValues("email");
         String res = "";
+        if (email == null || email.length > 1) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ResWriter.write(response , "Wrong arguments");
+            return;
+        }
 
         try{
-            if (fpwd.fpwdHandler(email)){
+            if (fpwd.fpwdHandler(email[0])){
                 logger.info("Mail sent successfully");
                 res += "Mail sent successfully";
             }

@@ -35,7 +35,7 @@ public class ForgetPasswordRepository {
         }
     }
 
-    public boolean deleteFPwd(ForgetPassword fdb) throws Exception{
+    public boolean deleteFPwd(ForgetPassword fdb) {
         String sql = "delete from forget_password where email = ?";
         try (Connection con = DBConfig.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)){
