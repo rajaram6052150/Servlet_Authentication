@@ -1,0 +1,49 @@
+<div class="content">
+
+  <button class="choose-way"{{action "goToLogin"}}>Login</button>
+  <button class="choose-way" {{action "goToSignup"}}>Sign Up</button>
+
+  {{#if isLogin}}
+
+    <form {{action "login" on="submit"}}>
+      {{input type="email" value=email placeholder="Email"}}
+      {{input type="password" value=password placeholder="Password"}}
+
+      <button class = "sub" type="submit">Login</button>
+
+      <p {{action "forgotPassword"}}>Forgot Password</p>
+    </form>
+
+  {{else if isForgotPassword}}
+
+    <form {{action "sendResetLink" on="submit"}}>
+      {{input type="email" value=email placeholder="Enter your email"}}
+      <button class = "sub" type="submit">Send Reset Link</button>
+    </form>
+
+  {{else}}
+
+    <form {{action "signup" on="submit"}}>
+      {{input type="email" value=email placeholder="Email"}}
+      {{input type="password" value=password placeholder="Password"}}
+      {{input type="password" value=confirmPassword placeholder="Confirm Password"}}
+
+      <button class = "sub" type="submit">Sign Up</button>
+    </form>
+
+  {{/if}}
+
+  <button type="button" class ="google-btn" {{action "googleLogin"}}>
+    <img src="/images/Logo-google-icon-PNG.png" alt="Google Logo">
+  </button>
+
+  {{#if message}}
+    <p class="message">{{message}}</p>
+  {{/if}}
+
+  {{#if error}}
+    <p class="message">{{error}}</p>
+  {{/if}}
+
+</div>
+
